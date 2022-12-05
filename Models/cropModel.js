@@ -2,32 +2,36 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const cropSchema = new mongoose.Schema({
-    cropFieldId: {
+
+    userId: {
         type: ObjectId,
-        ref: 'CropField',
-        required: true,
-        trim: true
+        required: true
     },
-    cropName: {
+    commonName: {
         type: String,
-        required: true,
-        trim: true
+        required: true
     },
-    categories: {
+    specialName: {
         type: String,
-        required: true,
-        trim: true
+        required: true
     },
-    nutrition: {
-        type: [String],
-        required: true,
-        trim: true
-    },
-    profit: {
+    category: {
         type: String,
-        required: true,
-        trim: true
+        required: true
+    },
+    family: {
+        type: String,
+        required: true
+    },
+    cropCycle: {
+        type: String,
+        required: true
+    },
+    fertilisers: [{ type: String, required: true }],
+    isDelete: {
+        type: Boolean,
+        default: false
     }
-}, { timestamps: true });
+}, { timestamps: true })
 
 module.exports = mongoose.model('Crop', cropSchema);

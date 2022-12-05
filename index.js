@@ -1,30 +1,39 @@
-const express=require("express")
-const bodyParser=require("body-parser")
-const mongoose=require("mongoose")
-const route=require("./route/route")
-const app=express()
-const cors=require("cors")
-const passport=require('passport') 
-const session=require('express-session')
-require("./passportSetup")
+const express = require("express")
+const mongoose = require("mongoose")
+const bodyParse = require("body-parser")
+const app = express()
+const route = require("./routes/route")
+require("dotenv").config()
 
-app.use(session({secret:"FUAssignment"}))
-app.use(passport.initialize());
-app.use(passport.session()); 
+//==============================Authencation portion using google=================================================
+const passport = require("passport")
 
-app.use(cors())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended:true}))
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+ 
+passport.use(new GoogleStrategy({
+    clientID: `${process.env.clientID}`,
+    clientSecret: `${process.env.clientSecret}`,
+    callbackURL: "http://localhost:3000"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+      return cb(null, profile); 
+  }
+));
 
+app.set('view engine','ejs')
+//====================================================================================
 
-const clusterLink="mongodb+srv://samirlohiya909:Lohiya123@samirlohiya.nszppy8.mongodb.net/school-management?retryWrites=true&w=majority"
-mongoose.connect(clusterLink,{useNewUrlParser:true})
-.then(()=>console.log("MongoDB is connected"))
-.catch(err=>console.log(err))
+app.use(bodyParse.json())
 
+mongoose.connect(`mongodb+srv://pushpak:${process.env.cluster_Password}@radoncluster.opqe2.mongodb.net/${process.env.cluster_Name}?retryWrites=true&w=majority`, {
+    useNewUrlParser: true
+}) 
+.then (()=> console.log("mongodb connected"))
+.catch(err => console.log(err))
 
 app.use("/",route)
 
-app.listen(3000,function(){
-    console.log('Express app running on port ' + 3000)
+let port = process.env.PORT
+app.listen(port,()=>{
+    console.log(`server is running on ${port}`)
 })
